@@ -40,7 +40,8 @@
 |--------|-------------|----------------|
 | <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/home.jpg" width="250"/> | <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/riwayat.jpg" width="250"/> | <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/target.jpg" width="250"/> |
 
---
+---
+
 ## 🚀 Cara Instalasi
 
 1. Clone repository ini:
