@@ -23,7 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TransactionDialog.OnTransactionSuccessListener {
 
     private DatabaseHelper dbHelper;
     private LineChart chartTabungan;
@@ -101,20 +101,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupButtons() {
         btnTambah.setOnClickListener(v -> {
-            Intent intent = new Intent(this, TambahActivity.class);
-            intent.putExtra("jenis", "masuk");
-            startActivity(intent);
+            new TransactionDialog(this, dbHelper, this).show("masuk");
         });
 
         btnTarik.setOnClickListener(v -> {
-            Intent intent = new Intent(this, TambahActivity.class);
-            intent.putExtra("jenis", "keluar");
-            startActivity(intent);
+            new TransactionDialog(this, dbHelper, this).show("keluar");
         });
     }
 
     private void updateTotalSaldo() {
         int saldo = dbHelper.getTotalSaldo();
         tvTotalSaldo.setText(MoneyHelper.formatSimple(saldo));
+    }
+
+    @Override
+    public void onTransactionAdded() {
+        updateTotalSaldo();
+        setupChart();
     }
 }
