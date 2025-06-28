@@ -43,8 +43,20 @@
     <string name="empty_transactions">Belum ada transaksi</string>
     <string name="empty_goals">Belum ada target tabungan</string>
 
+
     <!-- Format Strings -->
     <string name="currency_format">Rp %,d</string>
     <string name="progress_format">%d%% (%s/%s)</string>
     <string name="date_format">dd MMM yyyy</string>
+
+    <string name="welcome_notification_title">Selamat Datang di Celenganku</string>
+    <string name="welcome_notification_message">Aplikasi siap membantu mengelola keuangan Anda</string>
+    <string name="low_balance_title">Saldo Rendah</string>
+    <string name="low_balance_message">Saldo Anda tinggal %s, yuk tambah tabungan!</string>
+    <string name="transaction_success_title">Transaksi Berhasil</string>
+    <string name="transaction_success_message">Transaksi Anda telah tercatat</string>
+    <string name="savings_progress">Perkembangan Tabungan</string>
+
+    <string name="notification_title">Waktunya Menabung!</string>
+    <string name="notification_message">Jangan lupa catat pengeluaran dan tabungan hari ini</string>
 </resources>
