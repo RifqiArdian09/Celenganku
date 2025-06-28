@@ -36,9 +36,16 @@
 - **Material Design** – UI modern dan konsisten  
 
 ---
+| Halaman Utama | Riwayat Transaksi | Target Tabungan |
+|--------|-------------|----------------|
+| <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/home.jpg" width="250"/> | <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/riwayat.jpg" width="250"/> | <img src="https://github.com/RifqiArdian09/Celenganku/blob/master/app/src/main/res/doc/target.jpg" width="250"/> |
 
+--
 ## 🚀 Cara Instalasi
 
 1. Clone repository ini:
    ```bash
    git clone https://github.com/username/celenganku.git
+   ```
+2. Buka project di Android Studio
+3. Build dan jalankan di emulator atau perangkat Android
