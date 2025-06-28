@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+
+
+
+
+
+        <color name="colorPrimary">#8D6E63</color>
+        <color name="colorPrimaryDark">#5D4037</color>
+        <color name="colorAccent">#D7CCC8</color>
+
+        <color name="text_primary">#4E342E</color>
+        <color name="text_secondary">#5D4037</color>
+        <color name="white">#FFFFFF</color>
+
+        <color name="card_background">#FFFFFF</color>
+        <color name="card_stroke">#D7CCC8</color>
+
+        <color name="progress_primary">#8D6E63</color>
+        <color name="progress_background">#D7CCC8</color>
+
+        <color name="income">#4CAF50</color>
+        <color name="expense">#F44336</color>
+
+        <!-- Warna utama -->
+        <color name="primary">#8D6E63</color>
+        <color name="primary_dark">#5D4037</color>
+        <color name="accent">#D7CCC8</color>
+        <color name="text">#FFFFFF</color>
+
+        <color name="background">#EFEBE9</color>
+
+
+
+
+</resources>

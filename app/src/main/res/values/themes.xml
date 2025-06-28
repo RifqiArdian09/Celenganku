@@ -1,0 +1,38 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema utama aplikasi -->
+    <style name="Theme.Celenganku" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Warna utama -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Warna sekunder -->
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent</item>
+        <item name="colorOnSecondary">@color/text</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+
+        <!-- Latar belakang window -->
+        <item name="android:windowBackground">@color/background</item>
+
+        <!-- Komponen UI -->
+        <item name="buttonStyle">@style/Widget.Celenganku.Button</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Celenganku.Body1</item>
+    </style>
+
+    <!-- Gaya tombol kustom -->
+    <style name="Widget.Celenganku.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- Gaya teks kustom -->
+    <style name="TextAppearance.Celenganku.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+</resources>

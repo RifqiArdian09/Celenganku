@@ -1,0 +1,50 @@
+<resources>
+    <!-- App Info -->
+    <string name="celenganku_app_name">Celenganku</string>
+
+    <string name="app_description">Aplikasi pencatat tabungan sederhana</string>
+
+    <!-- Common -->
+    <string name="save">Simpan</string>
+    <string name="cancel">Batal</string>
+    <string name="date">Tanggal</string>
+    <string name="description">Deskripsi</string>
+    <string name="amount">Nominal</string>
+    <string name="choose_date">Pilih Tanggal</string>
+    <string name="empty_data">Belum ada data</string>
+
+    <!-- Main Activity -->
+    <string name="total_savings">Total Tabungan</string>
+    <string name="add_money">Tambah</string>
+    <string name="withdraw_money">Tarik</string>
+
+    <!-- Transaction -->
+    <string name="transaction_type">Jenis Transaksi</string>
+    <string name="income">Pemasukan</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="add_transaction">Tambah Transaksi</string>
+    <string name="transaction_history">Riwayat Transaksi</string>
+
+    <!-- Targets -->
+    <string name="savings_goals">Target Tabungan</string>
+    <string name="add_goal">Tambah Target</string>
+    <string name="goal_name">Nama Target</string>
+    <string name="target_amount">Target Nominal</string>
+    <string name="target_date">Target Tanggal</string>
+    <string name="add_to_goal">Tambah ke Target</string>
+    <string name="progress">Progress</string>
+    <string name="days_left">Hari tersisa: %d</string>
+
+    <!-- Notifications -->
+    <string name="reminder_title">Ingat menabung!</string>
+    <string name="reminder_message">Jangan lupa catat transaksi hari ini</string>
+
+    <!-- Empty States -->
+    <string name="empty_transactions">Belum ada transaksi</string>
+    <string name="empty_goals">Belum ada target tabungan</string>
+
+    <!-- Format Strings -->
+    <string name="currency_format">Rp %,d</string>
+    <string name="progress_format">%d%% (%s/%s)</string>
+    <string name="date_format">dd MMM yyyy</string>
+</resources>
