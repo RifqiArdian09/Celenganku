@@ -1,47 +1,43 @@
-# Celenganku - Aplikasi Manajemen Tabungan
+# 💰 Celenganku - Aplikasi Manajemen Tabungan Sederhana
 
-![App Logo](app/src/main/res/drawable/ic_logo.jpg)
 
-Celenganku adalah aplikasi Android untuk membantu pengguna mengelola keuangan pribadi dengan fokus pada tabungan dan pencapaian target finansial.
+**Celenganku** adalah aplikasi Android untuk membantu Anda mengelola tabungan pribadi dengan fitur pencatatan transaksi, target tabungan, dan visualisasi perkembangan keuangan.
 
-## Fitur Utama
+---
 
-- 📊 **Dashboard Utama**:
-  - Grafik perkembangan tabungan
-  - Total saldo terkini
-  - Tombol cepat untuk transaksi masuk/keluar
+## ✨ Fitur Utama
 
-- 💰 **Manajemen Transaksi**:
-  - Catat transaksi masuk (pemasukan)
-  - Catat transaksi keluar (pengeluaran)
-  - Riwayat transaksi lengkap
+✅ **Pencatatan Transaksi**  
+- Tambah pemasukan (tabungan) dan pengeluaran  
+- Riwayat transaksi terurut berdasarkan tanggal  
+- Hapus transaksi individu atau semua sekaligus  
 
-- 🎯 **Manajemen Target Tabungan**:
-  - Buat target tabungan dengan nominal dan tanggal target
-  - Lacak progres tabungan
-  - Notifikasi pencapaian target
+📊 **Visualisasi Tabungan**  
+- Grafik perkembangan tabungan dari waktu ke waktu  
+- Tampilan saldo total yang selalu diperbarui  
 
-- 🔔 **Sistem Notifikasi**:
-  - Pengingat harian
-  - Notifikasi saldo rendah
-  - Pemberitahuan pencapaian target
+🎯 **Manajemen Target Tabungan**  
+- Buat target tabungan dengan nama, nominal, dan tanggal target  
+- Tambah tabungan ke target tertentu  
+- Progress bar visual untuk melacak perkembangan  
 
-## Teknologi yang Digunakan
+🔔 **Notifikasi & Pengingat**  
+- Notifikasi saldo rendah  
+- Pengingat harian untuk mencatat transaksi  
+- Notifikasi transaksi berhasil  
 
-- **Bahasa Pemrograman**: Java
-- **Database**: SQLite
-- **Library Utama**:
-  - MPAndroidChart - untuk visualisasi grafik
-  - Material Components - untuk UI/UX
-- **Android SDK Minimum**: API 21 (Lollipop)
+---
 
-## Screenshot Aplikasi
+## 🛠 Teknologi yang Digunakan
 
-| Dashboard | Transaksi | Target |
-|-----------|-----------|--------|
-| ![Dashboard](screenshots/dashboard.png) | ![Transaksi](screenshots/transaction.png) | ![Target](screenshots/target.png) |
+- **Android SDK** – Pengembangan aplikasi Android  
+- **MPAndroidChart** – Visualisasi data tabungan  
+- **SQLite Database** – Penyimpanan data lokal  
+- **Material Design** – UI modern dan konsisten  
 
-## Instalasi
+---
+
+## 🚀 Cara Instalasi
 
 1. Clone repository ini:
    ```bash
