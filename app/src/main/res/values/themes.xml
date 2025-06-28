@@ -1,38 +1,63 @@
+<!-- themes.xml (night and regular versions) -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Tema utama aplikasi -->
+    <!-- Base application theme -->
     <style name="Theme.Celenganku" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Warna utama -->
+        <!-- Your existing theme items -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-
-        <!-- Warna sekunder -->
         <item name="colorSecondary">@color/accent</item>
         <item name="colorSecondaryVariant">@color/accent</item>
         <item name="colorOnSecondary">@color/text</item>
-
-        <!-- Status bar -->
         <item name="android:statusBarColor">@color/primary_dark</item>
-
-        <!-- Latar belakang window -->
         <item name="android:windowBackground">@color/background</item>
-
-        <!-- Komponen UI -->
         <item name="buttonStyle">@style/Widget.Celenganku.Button</item>
         <item name="textAppearanceBody1">@style/TextAppearance.Celenganku.Body1</item>
+
+        <!-- Add dialog theme -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.Celenganku.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Celenganku.MaterialAlertDialog</item>
     </style>
 
-    <!-- Gaya tombol kustom -->
+    <!-- Dialog styles -->
+    <style name="ThemeOverlay.Celenganku.Dialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButton.Positive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButton.Negative</item>
+    </style>
+
+    <style name="ThemeOverlay.Celenganku.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">@style/DialogTitleText</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/DialogBodyText</item>
+    </style>
+
+    <!-- Dialog button styles -->
+    <style name="DialogButton.Positive" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DialogButton.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="DialogTitleText" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="DialogBodyText" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Keep your existing button and text styles -->
     <style name="Widget.Celenganku.Button" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/white</item>
         <item name="backgroundTint">@color/primary</item>
         <item name="cornerRadius">8dp</item>
     </style>
 
-    <!-- Gaya teks kustom -->
     <style name="TextAppearance.Celenganku.Body1" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textColor">@color/text</item>
     </style>
-
 </resources>

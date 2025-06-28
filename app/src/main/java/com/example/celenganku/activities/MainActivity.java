@@ -1,13 +1,12 @@
+// MainActivity.java
 package com.example.celenganku.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.os.SystemClock;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.celenganku.R;
@@ -29,18 +28,22 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private LineChart chartTabungan;
     private Button btnTambah, btnTarik;
     private TextView tvTotalSaldo;
+    private TransactionDialog transactionDialog;
+    private long lastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize views
         dbHelper = new DatabaseHelper(this);
         chartTabungan = findViewById(R.id.chartTabungan);
         btnTambah = findViewById(R.id.btnTambah);
         btnTarik = findViewById(R.id.btnTarik);
         tvTotalSaldo = findViewById(R.id.tvTotalSaldo);
 
+        // Setup components
         setupChart();
         setupBottomNavigation();
         setupButtons();
@@ -50,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     @Override
     protected void onResume() {
         super.onResume();
+        refreshData();
+    }
+
+    private void refreshData() {
         updateTotalSaldo();
         setupChart();
     }
@@ -61,11 +68,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         float total = 0;
         for (int i = 0; i < transaksiList.size(); i++) {
             Transaksi t = transaksiList.get(i);
-            if (t.getJenis().equals("masuk")) {
-                total += t.getNominal();
-            } else {
-                total -= t.getNominal();
-            }
+            total += t.getJenis().equals("masuk") ? t.getNominal() : -t.getNominal();
             entries.add(new Entry(i, total));
         }
 
@@ -79,44 +82,66 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) return false;
+            lastClickTime = SystemClock.elapsedRealtime();
 
-                if (id == R.id.nav_home) {
-                    // Already in MainActivity
-                    return true;
-                } else if (id == R.id.nav_history) {
-                    startActivity(new Intent(MainActivity.this, RiwayatActivity.class));
-                    return true;
-                } else if (id == R.id.nav_target) {
-                    startActivity(new Intent(MainActivity.this, TargetActivity.class));
-                    return true;
-                }
-                return false;
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                return true;
+            } else if (id == R.id.nav_history) {
+                startActivity(new Intent(this, RiwayatActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                return true;
+            } else if (id == R.id.nav_target) {
+                startActivity(new Intent(this, TargetActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                return true;
             }
+            return false;
         });
     }
 
     private void setupButtons() {
-        btnTambah.setOnClickListener(v -> {
-            new TransactionDialog(this, dbHelper, this).show("masuk");
-        });
+        btnTambah.setOnClickListener(v -> showTransactionDialog("masuk"));
+        btnTarik.setOnClickListener(v -> showTransactionDialog("keluar"));
+    }
 
-        btnTarik.setOnClickListener(v -> {
-            new TransactionDialog(this, dbHelper, this).show("keluar");
-        });
+    private void showTransactionDialog(String jenis) {
+        if (SystemClock.elapsedRealtime() - lastClickTime < 1000) return;
+        lastClickTime = SystemClock.elapsedRealtime();
+
+        if (transactionDialog != null) {
+            transactionDialog.dismiss();
+        }
+
+        transactionDialog = new TransactionDialog(this, dbHelper, this);
+        transactionDialog.show(jenis);
     }
 
     private void updateTotalSaldo() {
-        int saldo = dbHelper.getTotalSaldo();
-        tvTotalSaldo.setText(MoneyHelper.formatSimple(saldo));
+        tvTotalSaldo.setText(MoneyHelper.formatSimple(dbHelper.getTotalSaldo()));
     }
 
     @Override
     public void onTransactionAdded() {
-        updateTotalSaldo();
-        setupChart();
+        refreshData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (transactionDialog != null) {
+            transactionDialog.dismiss();
+            transactionDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (transactionDialog != null) {
+            transactionDialog.dismiss();
+        }
     }
 }

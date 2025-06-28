@@ -298,12 +298,14 @@ public class TargetActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
                 startActivity(new Intent(this, MainActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
                 return true;
             } else if (itemId == R.id.nav_target) {
                 return true;
             } else if (itemId == R.id.nav_history) {
                 startActivity(new Intent(this, RiwayatActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
                 return true;
             }

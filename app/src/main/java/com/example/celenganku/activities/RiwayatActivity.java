@@ -2,6 +2,7 @@ package com.example.celenganku.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class RiwayatActivity extends AppCompatActivity {
     private RecyclerView rvTransaksi;
     private TransaksiAdapter adapter;
     private MaterialToolbar toolbar;
+    private long lastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,6 @@ public class RiwayatActivity extends AppCompatActivity {
 
         // Setup toolbar
         setSupportActionBar(toolbar);
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        }
 
         // Setup RecyclerView
         rvTransaksi.setLayoutManager(new LinearLayoutManager(this));
@@ -113,14 +112,21 @@ public class RiwayatActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+                return false;
+            }
+            lastClickTime = SystemClock.elapsedRealtime();
+
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
                 startActivity(new Intent(this, MainActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
                 return true;
             } else if (id == R.id.nav_target) {
                 startActivity(new Intent(this, TargetActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
                 return true;
             } else if (id == R.id.nav_history) {

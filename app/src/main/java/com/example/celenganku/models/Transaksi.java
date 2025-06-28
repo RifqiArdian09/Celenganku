@@ -1,10 +1,11 @@
+// Transaksi.java
 package com.example.celenganku.models;
 
 import java.util.Date;
 
 public class Transaksi {
     private int id;
-    private String jenis; // "masuk" or "keluar"
+    private String jenis;
     private int nominal;
     private String deskripsi;
     private Date tanggal;

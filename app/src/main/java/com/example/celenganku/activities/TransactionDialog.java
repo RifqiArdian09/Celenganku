@@ -1,3 +1,4 @@
+// TransactionDialog.java
 package com.example.celenganku.activities;
 
 import android.app.AlertDialog;
@@ -21,15 +22,15 @@ import java.util.Date;
 
 public class TransactionDialog {
 
+    public interface OnTransactionSuccessListener {
+        void onTransactionAdded();
+    }
+
     private final Context context;
     private final DatabaseHelper dbHelper;
     private final OnTransactionSuccessListener listener;
     private AlertDialog dialog;
     private Date selectedDate = new Date();
-
-    public interface OnTransactionSuccessListener {
-        void onTransactionAdded();
-    }
 
     public TransactionDialog(Context context, DatabaseHelper dbHelper, OnTransactionSuccessListener listener) {
         this.context = context;
@@ -42,6 +43,7 @@ public class TransactionDialog {
         View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_transaksi, null);
         builder.setView(dialogView);
 
+        // Initialize views
         RadioGroup rgJenis = dialogView.findViewById(R.id.rgJenis);
         EditText etNominal = dialogView.findViewById(R.id.etNominal);
         EditText etDeskripsi = dialogView.findViewById(R.id.etDeskripsi);
@@ -50,68 +52,73 @@ public class TransactionDialog {
         Button btnBatal = dialogView.findViewById(R.id.btnBatal);
         Button btnSimpan = dialogView.findViewById(R.id.btnSimpan);
 
-        // Set default date
+        // Set initial values
         tvTanggal.setText(DateHelper.formatForDisplay(selectedDate));
+        rgJenis.check(defaultJenis.equals("masuk") ? R.id.rbMasuk : R.id.rbKeluar);
 
-        // Set default jenis
-        if (defaultJenis != null) {
-            if (defaultJenis.equals("masuk")) {
-                rgJenis.check(R.id.rbMasuk);
-            } else {
-                rgJenis.check(R.id.rbKeluar);
-            }
-        }
-
-        // Date picker setup
-        btnPilihTanggal.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(selectedDate);
-
-            new DatePickerDialog(context, (view, year, month, day) -> {
-                calendar.set(year, month, day);
-                selectedDate = calendar.getTime();
-                tvTanggal.setText(DateHelper.formatForDisplay(selectedDate));
-            },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)).show();
-        });
+        // Date picker
+        btnPilihTanggal.setOnClickListener(v -> showDatePicker(tvTanggal));
 
         // Cancel button
         btnBatal.setOnClickListener(v -> dismiss());
 
         // Save button
-        btnSimpan.setOnClickListener(v -> {
-            try {
-                String jenis = rgJenis.getCheckedRadioButtonId() == R.id.rbMasuk ? "masuk" : "keluar";
-                int nominal = Integer.parseInt(etNominal.getText().toString());
-                String deskripsi = etDeskripsi.getText().toString();
-
-                if (deskripsi.isEmpty()) {
-                    Toast.makeText(context, "Deskripsi tidak boleh kosong", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (nominal <= 0) {
-                    Toast.makeText(context, "Nominal harus lebih dari 0", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Transaksi transaksi = new Transaksi(0, jenis, nominal, deskripsi, selectedDate);
-                dbHelper.addTransaksi(transaksi);
-
-                if (listener != null) {
-                    listener.onTransactionAdded();
-                }
-                dismiss();
-
-            } catch (NumberFormatException e) {
-                Toast.makeText(context, "Nominal tidak valid", Toast.LENGTH_SHORT).show();
-            }
-        });
+        btnSimpan.setOnClickListener(v -> saveTransaction(rgJenis, etNominal, etDeskripsi));
 
         dialog = builder.create();
         dialog.show();
+    }
+
+    private void showDatePicker(TextView tvDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(selectedDate);
+
+        new DatePickerDialog(context, (view, year, month, day) -> {
+            calendar.set(year, month, day);
+            selectedDate = calendar.getTime();
+            tvDate.setText(DateHelper.formatForDisplay(selectedDate));
+        },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void saveTransaction(RadioGroup rgJenis, EditText etNominal, EditText etDeskripsi) {
+        try {
+            String jenis = rgJenis.getCheckedRadioButtonId() == R.id.rbMasuk ? "masuk" : "keluar";
+            int nominal = Integer.parseInt(etNominal.getText().toString());
+            String deskripsi = etDeskripsi.getText().toString();
+
+            if (validateInput(deskripsi, nominal)) {
+                Transaksi transaksi = new Transaksi(0, jenis, nominal, deskripsi, selectedDate);
+                if (dbHelper.addTransaksi(transaksi) != -1) {
+                    if (listener != null) {
+                        listener.onTransactionAdded();
+                    }
+                    dismiss();
+                } else {
+                    showError("Gagal menyimpan transaksi");
+                }
+            }
+        } catch (NumberFormatException e) {
+            showError("Nominal harus berupa angka");
+        }
+    }
+
+    private boolean validateInput(String deskripsi, int nominal) {
+        if (deskripsi.isEmpty()) {
+            showError("Deskripsi tidak boleh kosong");
+            return false;
+        }
+        if (nominal <= 0) {
+            showError("Nominal harus lebih dari 0");
+            return false;
+        }
+        return true;
+    }
+
+    private void showError(String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     public void dismiss() {
