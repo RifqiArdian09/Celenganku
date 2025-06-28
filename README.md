@@ -45,7 +45,7 @@
 
 1. Clone repository ini:
    ```bash
-   git clone https://github.com/username/celenganku.git
+   git clone https://github.com/RifqiArdian09/Celenganku.git
    ```
 2. Buka project di Android Studio
 3. Build dan jalankan di emulator atau perangkat Android
