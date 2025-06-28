@@ -1,13 +1,19 @@
 package com.example.celenganku.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,66 +23,52 @@ import com.example.celenganku.R;
 import com.example.celenganku.adapters.TargetAdapter;
 import com.example.celenganku.database.DatabaseHelper;
 import com.example.celenganku.models.Target;
-import com.example.celenganku.utils.DateHelper;
-import com.example.celenganku.utils.MoneyHelper;
+import com.example.celenganku.models.Transaksi;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class TargetActivity extends AppCompatActivity implements TargetAdapter.OnTargetClickListener {
+public class TargetActivity extends AppCompatActivity {
+
     private DatabaseHelper dbHelper;
     private RecyclerView rvTarget;
     private TargetAdapter adapter;
     private TextView tvEmpty;
-    private MaterialToolbar toolbar;
-
-    // Dialog references
+    private Calendar targetDateCalendar = Calendar.getInstance();
     private AlertDialog currentDialog;
-    private AlertDialog savingsDialog;
-    private Date selectedTargetDate;
-    private Target currentTarget;
-    private EditText etNamaTarget;
-    private EditText etTargetNominal;
-    private TextView tvTanggalTarget;
-    private EditText etNominal;
+    private long lastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_target);
 
-        // Initialize Toolbar
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Enable back button
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
         dbHelper = new DatabaseHelper(this);
         rvTarget = findViewById(R.id.rvTarget);
         tvEmpty = findViewById(R.id.tvEmpty);
+        FloatingActionButton fabAddTarget = findViewById(R.id.fabAddTarget);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         rvTarget.setLayoutManager(new LinearLayoutManager(this));
-        loadTarget();
+        setupBottomNavigation();
+        loadTargets();
 
-        // Setup FAB click listener
-        FloatingActionButton fabAddTarget = findViewById(R.id.fabAddTarget);
-        fabAddTarget.setOnClickListener(v -> showAddTargetDialog());
+        fabAddTarget.setOnClickListener(v -> {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) return;
+            lastClickTime = SystemClock.elapsedRealtime();
+            showAddTargetDialog();
+        });
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    private void loadTarget() {
+    private void loadTargets() {
         List<Target> targetList = dbHelper.getAllTarget();
         if (targetList.isEmpty()) {
             tvEmpty.setVisibility(View.VISIBLE);
@@ -84,175 +76,254 @@ public class TargetActivity extends AppCompatActivity implements TargetAdapter.O
         } else {
             tvEmpty.setVisibility(View.GONE);
             rvTarget.setVisibility(View.VISIBLE);
-            adapter = new TargetAdapter(targetList, this, this::showDeleteConfirmation);
-            rvTarget.setAdapter(adapter);
+            if (adapter == null) {
+                adapter = new TargetAdapter(targetList,
+                        this::showAddSavingsDialog,
+                        this::showDeleteConfirmation);
+                rvTarget.setAdapter(adapter);
+            } else {
+                adapter.updateData(targetList);
+            }
         }
-    }
-
-    private void showDeleteConfirmation(Target target) {
-        new AlertDialog.Builder(this)
-                .setTitle("Hapus Target")
-                .setMessage("Apakah Anda yakin ingin menghapus target ini?")
-                .setPositiveButton("Ya", (dialog, which) -> {
-                    dbHelper.deleteTarget(target.getId());
-                    loadTarget();
-                    Toast.makeText(this, "Target dihapus", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Tidak", null)
-                .show();
     }
 
     private void showAddTargetDialog() {
+        if (isDialogShowing()) return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_target, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_target, null);
         builder.setView(dialogView);
 
-        etNamaTarget = dialogView.findViewById(R.id.etNamaTarget);
-        etTargetNominal = dialogView.findViewById(R.id.etTargetAmount);
-        tvTanggalTarget = dialogView.findViewById(R.id.tvTanggalTarget);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, 1);
-        selectedTargetDate = calendar.getTime();
-        tvTanggalTarget.setText(DateHelper.formatForDisplay(selectedTargetDate));
-
-        // Date picker button handled in XML
         currentDialog = builder.create();
-        currentDialog.show();
-    }
+        currentDialog.setCanceledOnTouchOutside(false);
 
-    // Called from XML onClick
-    public void onPilihTanggalClick(View view) {
-        Calendar calendar = Calendar.getInstance();
-        new DatePickerDialog(this, (datePicker, year, month, day) -> {
-            calendar.set(year, month, day);
-            selectedTargetDate = calendar.getTime();
-            tvTanggalTarget.setText(DateHelper.formatForDisplay(selectedTargetDate));
-        },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show();
-    }
+        EditText etNamaTarget = dialogView.findViewById(R.id.etNamaTarget);
+        EditText etTargetAmount = dialogView.findViewById(R.id.etTargetAmount);
+        Button btnPilihTanggal = dialogView.findViewById(R.id.btnPilihTanggal);
+        TextView tvTanggalTarget = dialogView.findViewById(R.id.tvTanggalTarget);
+        Button btnBatal = dialogView.findViewById(R.id.btnBatal);
+        Button btnSimpan = dialogView.findViewById(R.id.btnSimpan);
 
-    // Called from XML onClick
-    public void onSimpanTargetClick(View view) {
-        String nama = etNamaTarget.getText().toString();
-        String nominalStr = etTargetNominal.getText().toString();
+        targetDateCalendar = Calendar.getInstance();
+        targetDateCalendar.add(Calendar.MONTH, 1);
+        updateDateText(tvTanggalTarget);
 
-        if (nama.isEmpty()) {
-            etNamaTarget.setError("Nama target tidak boleh kosong");
-            return;
-        }
+        btnPilihTanggal.setOnClickListener(v -> showDatePickerDialog(tvTanggalTarget));
 
-        try {
-            int targetNominal = Integer.parseInt(nominalStr);
-            if (targetNominal <= 0) {
-                etTargetNominal.setError("Nominal harus lebih dari 0");
+        btnBatal.setOnClickListener(v -> dismissDialog());
+
+        btnSimpan.setOnClickListener(v -> {
+            String nama = etNamaTarget.getText().toString().trim();
+            String nominalStr = etTargetAmount.getText().toString().trim();
+
+            if (nama.isEmpty()) {
+                etNamaTarget.setError("Nama target harus diisi");
                 return;
             }
 
-            Target target = new Target(0, nama, targetNominal, 0, selectedTargetDate);
-            dbHelper.addTarget(target);
-            loadTarget();
-            currentDialog.dismiss();
-            Toast.makeText(this, "Target berhasil ditambahkan", Toast.LENGTH_SHORT).show();
-        } catch (NumberFormatException e) {
-            etTargetNominal.setError("Nominal tidak valid");
-        }
+            if (nominalStr.isEmpty()) {
+                etTargetAmount.setError("Target nominal harus diisi");
+                return;
+            }
+
+            try {
+                int targetNominal = Integer.parseInt(nominalStr);
+                if (targetNominal <= 0) {
+                    etTargetAmount.setError("Nominal harus lebih dari 0");
+                    return;
+                }
+
+                Target target = new Target(
+                        0, nama, targetNominal, 0, targetDateCalendar.getTime()
+                );
+
+                long result = dbHelper.addTarget(target);
+                if (result != -1) {
+                    Toast.makeText(this, "Target berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+                    loadTargets();
+                    dismissDialog();
+                } else {
+                    Toast.makeText(this, "Gagal menambahkan target", Toast.LENGTH_SHORT).show();
+                }
+            } catch (NumberFormatException e) {
+                etTargetAmount.setError("Masukkan angka yang valid");
+            }
+        });
+
+        showDialog();
     }
 
-    // Called from XML onClick
-    public void onBatalClick(View view) {
-        if (currentDialog != null && currentDialog.isShowing()) {
-            currentDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void onAddSavingsClick(Target target) {
-        currentTarget = target;
-        if (target.getProgress() >= 100) {
-            Toast.makeText(this, "Target sudah tercapai!", Toast.LENGTH_SHORT).show();
+    private void showAddSavingsDialog(Target target) {
+        if (isDialogShowing() || target.getTerkumpul() >= target.getTargetNominal()) {
+            Toast.makeText(this, "Target sudah terpenuhi", Toast.LENGTH_SHORT).show();
             return;
         }
-        showAddSavingsDialog();
-    }
 
-    private void showAddSavingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_add_savings, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_savings, null);
         builder.setView(dialogView);
+
+        currentDialog = builder.create();
+        currentDialog.setCanceledOnTouchOutside(false);
 
         TextView tvTargetName = dialogView.findViewById(R.id.tvTargetName);
         TextView tvCurrentProgress = dialogView.findViewById(R.id.tvCurrentProgress);
-        etNominal = dialogView.findViewById(R.id.etNominal);
+        EditText etNominal = dialogView.findViewById(R.id.etNominal);
+        Button btnBatal = dialogView.findViewById(R.id.btnBatal);
+        Button btnSimpan = dialogView.findViewById(R.id.btnSimpan);
 
-        tvTargetName.setText(currentTarget.getNama());
-        String progressText = "Terkumpul: " + MoneyHelper.formatSimple(currentTarget.getTerkumpul()) +
-                " dari " + MoneyHelper.formatSimple(currentTarget.getTargetNominal());
-        tvCurrentProgress.setText(progressText);
+        int remaining = target.getTargetNominal() - target.getTerkumpul();
 
-        savingsDialog = builder.create();
-        savingsDialog.show();
-    }
+        tvTargetName.setText(target.getNama());
+        tvCurrentProgress.setText(String.format(Locale.getDefault(),
+                "Progress: Rp%,d dari Rp%,d\nSisa: Rp%,d",
+                target.getTerkumpul(), target.getTargetNominal(), remaining));
 
-    // Called from XML onClick
-    public void onSimpanTabunganClick(View view) {
-        String nominalStr = etNominal.getText().toString();
+        btnBatal.setOnClickListener(v -> dismissDialog());
 
-        if (nominalStr.isEmpty()) {
-            etNominal.setError("Jumlah tidak boleh kosong");
-            return;
-        }
+        btnSimpan.setOnClickListener(v -> {
+            String nominalStr = etNominal.getText().toString().trim();
 
-        try {
-            int nominal = Integer.parseInt(nominalStr);
-            if (nominal <= 0) {
-                etNominal.setError("Jumlah harus lebih dari 0");
+            if (nominalStr.isEmpty()) {
+                etNominal.setError("Jumlah tabungan harus diisi");
                 return;
             }
 
-            int newTerkumpul = currentTarget.getTerkumpul() + nominal;
-            dbHelper.updateTerkumpul(currentTarget.getId(), newTerkumpul);
+            try {
+                int nominal = Integer.parseInt(nominalStr);
+                if (nominal <= 0) {
+                    etNominal.setError("Jumlah harus lebih dari 0");
+                    return;
+                }
 
-            Target updatedTarget = dbHelper.getTarget(currentTarget.getId());
-            if (updatedTarget != null && updatedTarget.getProgress() >= 100) {
-                showCompletionDialog(updatedTarget);
+                if (nominal > remaining) {
+                    etNominal.setError("Jumlah melebihi sisa target");
+                    return;
+                }
+
+                int newTerkumpul = target.getTerkumpul() + nominal;
+                int updated = dbHelper.updateTerkumpul(target.getId(), newTerkumpul);
+
+                if (updated > 0) {
+                    Transaksi transaksi = new Transaksi(
+                            0, "masuk", nominal,
+                            "Tabungan untuk " + target.getNama(), new Date()
+                    );
+                    dbHelper.addTransaksi(transaksi);
+
+                    Toast.makeText(this, "Tabungan berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+                    loadTargets();
+                    dismissDialog();
+                } else {
+                    Toast.makeText(this, "Gagal menambahkan tabungan", Toast.LENGTH_SHORT).show();
+                }
+            } catch (NumberFormatException e) {
+                etNominal.setError("Masukkan angka yang valid");
             }
+        });
 
-            loadTarget();
-            savingsDialog.dismiss();
-            Toast.makeText(this, "Tabungan berhasil ditambahkan", Toast.LENGTH_SHORT).show();
-        } catch (NumberFormatException e) {
-            etNominal.setError("Jumlah tidak valid");
+        showDialog();
+    }
+
+    private void showDeleteConfirmation(Target target) {
+        if (isDialogShowing()) return;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Hapus Target")
+                .setMessage("Apakah Anda yakin ingin menghapus target ini?")
+                .setPositiveButton("Ya", (d, which) -> {
+                    if (SystemClock.elapsedRealtime() - lastClickTime < 1000) return;
+                    lastClickTime = SystemClock.elapsedRealtime();
+
+                    int deleted = dbHelper.deleteTarget(target.getId());
+                    if (deleted > 0) {
+                        Toast.makeText(this, "Target berhasil dihapus", Toast.LENGTH_SHORT).show();
+                        loadTargets();
+                    } else {
+                        Toast.makeText(this, "Gagal menghapus target", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Tidak", (d, which) -> d.dismiss())
+                .setCancelable(false);
+
+        currentDialog = builder.create();
+        currentDialog.setCanceledOnTouchOutside(false);
+        showDialog();
+    }
+
+    private boolean isDialogShowing() {
+        return currentDialog != null && currentDialog.isShowing();
+    }
+
+    private void showDialog() {
+        if (!isFinishing() && !isDestroyed() && !isDialogShowing()) {
+            currentDialog.show();
         }
     }
 
-    // Called from XML onClick
-    public void onBatalTabunganClick(View view) {
-        if (savingsDialog != null && savingsDialog.isShowing()) {
-            savingsDialog.dismiss();
+    private void dismissDialog() {
+        if (isDialogShowing()) {
+            currentDialog.dismiss();
         }
     }
 
-    private void showCompletionDialog(Target target) {
-        new AlertDialog.Builder(this)
-                .setTitle("Selamat!")
-                .setMessage("Target " + target.getNama() + " telah tercapai!")
-                .setPositiveButton("OK", null)
-                .show();
+    private void showDatePickerDialog(TextView tvDate) {
+        new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    targetDateCalendar.set(Calendar.YEAR, year);
+                    targetDateCalendar.set(Calendar.MONTH, month);
+                    targetDateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    updateDateText(tvDate);
+                },
+                targetDateCalendar.get(Calendar.YEAR),
+                targetDateCalendar.get(Calendar.MONTH),
+                targetDateCalendar.get(Calendar.DAY_OF_MONTH)
+        ).show();
+    }
+
+    private void updateDateText(TextView textView) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+        textView.setText(sdf.format(targetDateCalendar.getTime()));
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+                return false;
+            }
+            lastClickTime = SystemClock.elapsedRealtime();
+
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_target) {
+                return true;
+            } else if (itemId == R.id.nav_history) {
+                startActivity(new Intent(this, RiwayatActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
+        bottomNav.setSelectedItemId(R.id.nav_target);
     }
 
     @Override
     protected void onDestroy() {
-        if (currentDialog != null && currentDialog.isShowing()) {
-            currentDialog.dismiss();
-        }
-        if (savingsDialog != null && savingsDialog.isShowing()) {
-            savingsDialog.dismiss();
-        }
+        dismissDialog();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

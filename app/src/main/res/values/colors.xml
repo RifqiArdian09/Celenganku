@@ -35,6 +35,7 @@
         <color name="primary_dark">#5D4037</color>
         <color name="accent">#D7CCC8</color>
         <color name="text">#FFFFFF</color>
+        <color name="gray">#736E6E</color>
 
         <color name="background">#EFEBE9</color>
 

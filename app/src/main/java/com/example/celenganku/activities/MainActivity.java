@@ -3,22 +3,28 @@ package com.example.celenganku.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.celenganku.R;
 import com.example.celenganku.database.DatabaseHelper;
 import com.example.celenganku.models.Transaksi;
+import com.example.celenganku.utils.MoneyHelper;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import android.widget.Button;
-import android.widget.TextView;
-import com.example.celenganku.utils.MoneyHelper;
 
 public class MainActivity extends AppCompatActivity {
+
     private DatabaseHelper dbHelper;
     private LineChart chartTabungan;
     private Button btnTambah, btnTarik;
@@ -71,21 +77,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("NonConstantResourceId")
     private void setupBottomNavigation() {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        bottomNav.setOnNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
-                return true;
-            } else if (id == R.id.nav_history) {
-                startActivity(new Intent(this, RiwayatActivity.class));
-                return true;
-            } else if (id == R.id.nav_target) {
-                startActivity(new Intent(this, TargetActivity.class));
-                return true;
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_home) {
+                    // Already in MainActivity
+                    return true;
+                } else if (id == R.id.nav_history) {
+                    startActivity(new Intent(MainActivity.this, RiwayatActivity.class));
+                    return true;
+                } else if (id == R.id.nav_target) {
+                    startActivity(new Intent(MainActivity.this, TargetActivity.class));
+                    return true;
+                }
+                return false;
             }
-            return false;
         });
     }
 

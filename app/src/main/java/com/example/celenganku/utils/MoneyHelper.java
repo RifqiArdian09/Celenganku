@@ -6,6 +6,7 @@ import java.util.Locale;
 public class MoneyHelper {
     public static String formatRupiah(int amount) {
         NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        format.setMaximumFractionDigits(0);
         return format.format(amount);
     }
 
