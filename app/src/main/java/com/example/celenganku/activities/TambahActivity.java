@@ -2,8 +2,10 @@ package com.example.celenganku.activities;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,10 @@ public class TambahActivity extends AppCompatActivity {
         etNominal = findViewById(R.id.etNominal);
         etDeskripsi = findViewById(R.id.etDeskripsi);
         tvTanggal = findViewById(R.id.tvTanggal);
+
+        // Set up back button
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
 
         // Set default jenis based on intent
         String jenis = getIntent().getStringExtra("jenis");
@@ -76,6 +82,11 @@ public class TambahActivity extends AppCompatActivity {
 
                 if (deskripsi.isEmpty()) {
                     Toast.makeText(this, "Deskripsi tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (nominal <= 0) {
+                    Toast.makeText(this, "Nominal harus lebih dari 0", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

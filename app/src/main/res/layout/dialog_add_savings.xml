@@ -4,13 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Tambah Tabungan untuk:"
-        android:textSize="16sp"/>
+    android:padding="24dp">
 
     <TextView
         android:id="@+id/tvTargetName"
@@ -18,8 +12,15 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"/>
+
+    <!-- Add this TextView for progress display -->
+    <TextView
+        android:id="@+id/tvCurrentProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textSize="14sp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -30,8 +31,8 @@
             android:id="@+id/etNominal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nominal"
-            android:inputType="number"/>
+            android:hint="Jumlah Tabungan"
+            android:inputType="numberDecimal"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
@@ -42,24 +43,24 @@
 
         <Button
             android:id="@+id/btnBatal"
+            android:onClick="onBatalTabunganClick"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:text="Batal"
             android:backgroundTint="@color/accent"
-            android:textColor="@color/text"
-            android:onClick="onBatalClick"/>
+            android:textColor="@color/text"/>
 
         <Button
             android:id="@+id/btnSimpan"
+            android:onClick="onSimpanTabunganClick"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:text="Simpan"
             android:backgroundTint="@color/primary"
-            android:textColor="@color/white"
-            android:onClick="onSimpanTabunganClick"/>
+            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>

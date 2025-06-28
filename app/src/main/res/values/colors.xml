@@ -25,8 +25,10 @@
         <color name="progress_primary">#8D6E63</color>
         <color name="progress_background">#D7CCC8</color>
 
+    <color name="success">#4CAF50</color>  <!-- Green -->
         <color name="income">#4CAF50</color>
         <color name="expense">#F44336</color>
+        <color name="error">#F44336</color> <!-- Warna merah Material Design -->
 
         <!-- Warna utama -->
         <color name="primary">#8D6E63</color>

@@ -13,7 +13,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary"
         app:title="Target Tabungan"
-        app:titleTextColor="@color/white"/>
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationContentDescription="Back"/>
 
     <!-- RecyclerView mengisi sisa ruang -->
     <androidx.recyclerview.widget.RecyclerView
@@ -44,4 +46,6 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/primary"/>
+
+
 </RelativeLayout>

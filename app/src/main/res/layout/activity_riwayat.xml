@@ -13,7 +13,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary"
         app:title="Riwayat Transaksi"
-        app:titleTextColor="@color/white"/>
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationContentDescription="Back"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTransaksi"
@@ -21,4 +23,7 @@
         android:layout_height="match_parent"
         android:padding="8dp"
         tools:listitem="@layout/item_transaksi"/>
+    <!-- Bottom Navigation tetap di bawah -->
+
+
 </LinearLayout>
